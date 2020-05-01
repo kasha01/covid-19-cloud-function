@@ -25,15 +25,37 @@ exports.copyLocationsData = functions.firestore
 		}
 	});
 
-// Test function => http://localhost:5001/covid-19-5a8e7/us-central1/testMe
-exports.testMe = functions.https.onRequest(async (request, response) => {
+// Test function with Promise => http://localhost:5001/covid-19-5a8e7/us-central1/testMePromise
+exports.testMePromise = functions.https.onRequest((request, response) => {
 	copyData("dp3wj6x1yvrn");
 	response.send("end");
 });
 
+const copyData = (userDocId) =>{
+	let query = admin.firestore().collection('locationsNeg').where('userDocId', '==', userDocId);
+
+	query.get().then(querySnapshot => {
+	  querySnapshot.forEach(documentSnapshot => {
+			let data = documentSnapshot.data();
+	    admin.firestore().collection('locations').add({
+				l: data.l,
+				userDocId: data.userDocId,
+				lastStatusUpdate: data.lastStatusUpdate
+			});
+			console.log(`document ${documentSnapshot.ref.path} is copied`);
+	  });
+	});
+};
+
+
+// Test function => http://localhost:5001/covid-19-5a8e7/us-central1/testMe
+exports.testMe = functions.https.onRequest(async (request, response) => {
+	copyDataAsync("dp3wj6x1yvrn");
+	response.send("end");
+});
 
 // Private method copyData
-const copyData = async (userDocId) => {
+const copyDataAsync = async (userDocId) => {
 	const toWait = [];
 
 	// set copy function => copies data to locations collection
