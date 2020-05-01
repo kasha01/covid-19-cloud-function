@@ -21,7 +21,7 @@ exports.copyLocationsData = functions.firestore
 
 		if(newStatus == 'Positive'){
 			copyData(userDocId);
-			console.log(`data copied for ` + userDocID);
+			console.log(`data copied for user:` + userDocId);
 		}
 	});
 
