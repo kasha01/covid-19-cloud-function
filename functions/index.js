@@ -41,15 +41,15 @@ const copyData = async (userDocId) => {
 		await console.log(`new doc found` + documentSnapshot.ref.path);
 		let data = documentSnapshot.data();
 
-		await admin.firestore().collection('locationsNeg').add({
+		await admin.firestore().collection('locations').add({
 			l: data.l,
 			userDocId: data.userDocId,
 			lastStatusUpdate: data.lastStatusUpdate
 		});
 	};
 
-	// read doc from locationSafe collection
-	const snapshots = await admin.firestore().collection('locations').where('userDocId', '==', userDocId).get();
+	// read doc from locationNeg collection
+	const snapshots = await admin.firestore().collection('locationsNeg').where('userDocId', '==', userDocId).get();
 	snapshots.forEach((documentSnapshot) => {
 		toWait.push(copyFunction((documentSnapshot)));
 	});
