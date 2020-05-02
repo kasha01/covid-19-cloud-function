@@ -4,7 +4,9 @@ const admin = require('firebase-admin');
 admin.initializeApp(functions.config().firebase);
 
 exports.helloWorld = functions.https.onRequest((request, response) => {
-	response.send("Hello from Firebase!");
+	let date = new Date();
+	date.setDate(date.getDate() + 14);
+	response.send("Hello from Firebase!" + date);
 });
 
 // Listen for changes in all documents in the 'users' collection
@@ -27,12 +29,15 @@ exports.copyLocationsData = functions.firestore
 
 // Test function with Promise => http://localhost:5001/covid-19-5a8e7/us-central1/testMePromise
 exports.testMePromise = functions.https.onRequest((request, response) => {
-	copyData("dp3wj6x1yvrn");
-	response.send("end");
+	copyData("HViwhCuZhS6RCHNOVOh0");
+	response.send("end promise");
 });
 
 const copyData = (userDocId) =>{
-	let query = admin.firestore().collection('locationsNeg').where('userDocId', '==', userDocId);
+	let date = new Date();
+	date.setDate(date.getDate() - 14);
+
+	let query = admin.firestore().collection('locationsNeg').where('userDocId', '==', userDocId).where('createDate', '>', date);
 
 	query.get().then(querySnapshot => {
 	  querySnapshot.forEach(documentSnapshot => {
@@ -40,7 +45,8 @@ const copyData = (userDocId) =>{
 	    admin.firestore().collection('locations').add({
 				l: data.l,
 				userDocId: data.userDocId,
-				lastStatusUpdate: data.lastStatusUpdate
+				createDate: data.createDate,
+				isCopiedFromLocationsNeg: true
 			});
 			console.log(`document ${documentSnapshot.ref.path} is copied`);
 	  });
