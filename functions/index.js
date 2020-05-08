@@ -44,11 +44,11 @@ const copyData = (userDocId) =>{
 			let data = documentSnapshot.data();
 	    admin.firestore().collection('locations').add({
 				l: data.l,
+				g: data.g,
 				userDocId: data.userDocId,
 				createDate: data.createDate,
 				isCopiedFromLocationsNeg: true
 			});
-			console.log(`document ${documentSnapshot.ref.path} is copied`);
 	  });
 	});
 };
@@ -66,11 +66,13 @@ const copyDataAsync = async (userDocId) => {
 
 	// set copy function => copies data to locations collection
 	const copyFunction = async (documentSnapshot) => {
+		console.log(`document ${documentSnapshot.ref.path} is copied`);
 		await console.log(`new doc found` + documentSnapshot.ref.path);
 		let data = documentSnapshot.data();
 
 		await admin.firestore().collection('locations').add({
 			l: data.l,
+			g: data.g,
 			userDocId: data.userDocId,
 			lastStatusUpdate: data.lastStatusUpdate
 		});
